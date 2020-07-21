@@ -6,8 +6,8 @@ const uri =
   "mongodb+srv://ismail:Whymami99+@sandbox-u2eog.mongodb.net/messageDB?retryWrites=true&w=majority";
 var ObjectID = require("mongodb").ObjectID;
 var cors = require("cors");
-var app = express();
-
+var app = require("express")();
+app.use(cors());
 const client = new MongoClient(uri);
 
 async function main() {
@@ -34,7 +34,7 @@ let users = [
 ];
 
 /* GET users listing. */
-app.get("/", cors(), async function (req, res, next) {
+router.get("/", cors(), async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   try {
     // Connect to the MongoDB cluster
@@ -51,18 +51,19 @@ app.get("/", cors(), async function (req, res, next) {
   res.send(messages);
 });
 
-router.get("/:userId", function (req, res, next) {
+router.get("/:userId", cors(), function (req, res, next) {
   const foundUser = users.find((user) => user.id === req.params.userId);
   res.setHeader("Content-Type", "application/json");
   res.send(foundUser);
 });
-app.delete("/:clear", cors(), async function (req, res, next) {
+router.delete("/:clear", cors(), async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   await client.db("messageDB").collection("messages").remove();
 });
 {
 }
-router.post("/", async function (req, res, next) {
+
+router.post("/", cors(), async function (req, res, next) {
   const newUser = req.body;
   newUser.id = uuid();
   //users.push(newUser);
@@ -76,7 +77,7 @@ router.post("/", async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   res.send(newUser);
 });
-router.delete("/", async function (req, res, next) {
+router.delete("/", cors(), async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   const _id = new ObjectID(req.body._id);
   try {
